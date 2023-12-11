@@ -1,17 +1,20 @@
-import UserLogin from "./user/service/UserLogin.ts";
-import UserRegister from "./user/service/UserRegister.ts";
+import CryptoInvert from "./adapters/CryptoInvert.ts";
+import UserLogin from "./core/user/service/UserLogin.ts";
+import UserRegister from "./core/user/service/UserRegister.ts";
+
+const cryptoProvider = new CryptoInvert();
 
 // user register
-const register = new UserRegister();
+const register = new UserRegister(cryptoProvider);
 
-register.run({
+await register.run({
     name: "John Lennon",
     email: "johnlennon@john.com",
     password: "123456"
 });
 
 // user login
-const login = new UserLogin();
+const login = new UserLogin(cryptoProvider);
 const user = await login.run({
     email: "johnlennon@john.com",
     password: "123456"

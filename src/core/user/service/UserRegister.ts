@@ -1,13 +1,16 @@
 import UseCase from "../../shared/UseCase.ts";
 import UserCollection from "../data/UserCollection.ts";
+import CryptoProvider from "../model/CryptoProvider.ts";
 import User from "../model/User.ts";
 
 export default class UserRegister implements UseCase<Required<User>, void> {
+    constructor(private cryptoProvider: CryptoProvider) {}
+
     async run(user: Required<User>): Promise<void> {
-        const criptoPassword = user.password.split('').reverse().join('')
-        const userWithCriptoPassword = { ...user, password: criptoPassword }
+        const cryptoPassword = await this.cryptoProvider.encrypt(user.password)
+        const userWithCryptoPassword = { ...user, password: cryptoPassword }
 
         const collection = new UserCollection()
-        await collection.add(userWithCriptoPassword)
+        await collection.add(userWithCryptoPassword)
     }
 }
