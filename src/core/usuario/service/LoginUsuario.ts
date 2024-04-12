@@ -1,5 +1,5 @@
 import CasoDeUso from "../../shared/CasoDeUso.ts";
-import ColecaoUsuario from "../data/ColecaoUsuario.ts";
+import ColecaoUsuario from "../model/ColecaoUsuario.ts";
 import ProvedorCripto from "../model/ProvedorCripto.ts";
 import Usuario from "../model/Usuario.ts";
 
@@ -9,12 +9,10 @@ export type LoginUsuarioEntrada = {
 }
 
 export default class LoginUsuario implements CasoDeUso<LoginUsuarioEntrada, Usuario | null> {
-    constructor(private provedorCripto: ProvedorCripto) {}
+    constructor(private colecao: ColecaoUsuario, private provedorCripto: ProvedorCripto) {}
 
-    async executar(dto: LoginUsuarioEntrada): Promise<Usuario | null> {
-        const colecao = new ColecaoUsuario()
-        
-        const usuario = await colecao.buscarPorEmail(dto.email)
+    async executar(dto: LoginUsuarioEntrada): Promise<Usuario | null> {        
+        const usuario = await this.colecao.buscarPorEmail(dto.email)
         if (!usuario) return null
 
         const saoIguais = await this.provedorCripto.comparar(dto.senha, usuario.senha!)
