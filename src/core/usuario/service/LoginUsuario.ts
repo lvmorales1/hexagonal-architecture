@@ -14,7 +14,7 @@ export default class LoginUsuario implements CasoDeUso<LoginUsuarioEntrada, Usua
     async executar(dto: LoginUsuarioEntrada): Promise<Usuario | null> {        
         const usuario = await this.colecao.buscarPorEmail(dto.email)
         if (!usuario) return null
-
+        
         const saoIguais = await this.provedorCripto.comparar(dto.senha, usuario.senha!)
 
         if (!saoIguais) return null
