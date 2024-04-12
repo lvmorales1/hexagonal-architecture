@@ -1,5 +1,6 @@
 import CasoDeUso from "../../shared/CasoDeUso.ts";
 import ColecaoUsuario from "../data/ColecaoUsuario.ts";
+import ProvedorCripto from "../model/ProvedorCripto.ts";
 import Usuario from "../model/Usuario.ts";
 
 export type LoginUsuarioEntrada = {
@@ -8,14 +9,17 @@ export type LoginUsuarioEntrada = {
 }
 
 export default class LoginUsuario implements CasoDeUso<LoginUsuarioEntrada, Usuario | null> {
+    constructor(private provedorCripto: ProvedorCripto) {}
+
     async executar(dto: LoginUsuarioEntrada): Promise<Usuario | null> {
         const colecao = new ColecaoUsuario()
         
         const usuario = await colecao.buscarPorEmail(dto.email)
         if (!usuario) return null
 
-        const senhaCripto = dto.senha.split('').reverse().join('')
-        if (usuario.senha !== senhaCripto) return null
+        const saoIguais = await this.provedorCripto.comparar(dto.senha, usuario.senha!)
+
+        if (!saoIguais) return null
 
         return {
             nome: usuario.nome,
